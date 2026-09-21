@@ -36,6 +36,13 @@ answer in plain text only — no code block.
 ## Hard rules (always follow these)
 
 - `cmd`, `os`, `math`, `csv`, `stored`, and `output_dir` are pre-defined. Do NOT import them.
+- `async` is a reserved keyword in Python 3 — `async=0` is a SYNTAX ERROR. The retrieved
+  PyMOL wiki docs show `async=0` because that is valid in PyMOL's command-line macro
+  language, NOT in Python. In Python code you MUST use the trailing-underscore form:
+    cmd.fetch('1ABC', async_=0)            # correct
+    cmd.fetch('1ABC', async=0)             # WRONG — will not compile
+  The same trailing-underscore rule applies to any other PyMOL parameter that collides
+  with a Python keyword.
 - To collect data with `cmd.iterate`, use the pre-defined `stored` object directly:
     stored.data = []
     cmd.iterate('selection', 'stored.data.append((chain, resi, resn, b))')
@@ -55,7 +62,9 @@ answer in plain text only — no code block.
 ## Syntax reference (correct forms for commonly misused calls)
 
 ### Load / fetch
-  cmd.fetch('1ABC')                        # from RCSB; use 4-letter PDB ID
+  cmd.fetch('1ABC', async_=0)              # from RCSB; use 4-letter PDB ID; async_ has a
+                                            # trailing underscore — bare `async=0` is a
+                                            # Python syntax error, not just a style choice
   cmd.load('file.pdb', 'name')
   cmd.save(os.path.join(output_dir, 'out.pdb'), 'selection')
 
